@@ -1,11 +1,13 @@
 <?php
 
+// Script de prueba manual: consulta una cuenta fija y muestra respuesta simple en HTML.
 include("api_client.php");
 
 $personId = "240420241052";
 
 function e($value)
 {
+    // Escape básico para evitar inyección HTML al imprimir datos remotos.
     return htmlspecialchars((string)$value, ENT_QUOTES, "UTF-8");
 }
 

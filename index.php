@@ -1,4 +1,5 @@
 <?php
+// Punto de entrada en la raiz: redirige al frontend y conserva query params.
 $queryString = $_SERVER["QUERY_STRING"] ?? "";
 $target = "front/index.html";
 

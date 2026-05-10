@@ -3,6 +3,7 @@
 include(__DIR__ . "/conexion.php");
 include(__DIR__ . "/../api/api_client.php");
 
+// Helper centralizado: redirige al frontend con estado y mensaje para mostrar alertas.
 function redirect_to_index($status, $message, $personId = "")
 {
     $query = "?status=" . urlencode($status) . "&msg=" . urlencode($message);
@@ -15,10 +16,12 @@ function redirect_to_index($status, $message, $personId = "")
     exit;
 }
 
+// Este endpoint solo acepta POST porque viene del boton "Comprar".
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     redirect_to_index("error", "Solicitud invalida");
 }
 
+// 0) Leer y validar datos de entrada del formulario.
 $personId = trim($_POST["person_id"] ?? "");
 $productoId = filter_input(INPUT_POST, "producto_id", FILTER_VALIDATE_INT);
 $descripcion = trim($_POST["descripcion"] ?? "");
@@ -35,6 +38,7 @@ if (strlen($descripcion) > 255) {
     $descripcion = substr($descripcion, 0, 255);
 }
 
+// 0.1) Cargar datos actuales del producto desde BD para usar precio/nombre reales.
 $productoStmt = mysqli_prepare(
     $conn,
     "SELECT p.id, p.nombre, p.precio, c.nombre AS categoria_nombre
@@ -58,7 +62,8 @@ $categoria = $productoRow["categoria_nombre"];
 
 
 // ======================================
-// 1. CONSULTAR SALDO ACTUAL
+// 1) CONSULTAR SALDO ACTUAL EN API
+// Se consulta primero para saber si el usuario puede pagar esta compra.
 // ======================================
 
 $accountBefore = api_get_account($personId);
@@ -75,7 +80,7 @@ $nombreUsuario = $dataGet["name"];
 
 
 // ======================================
-// 2. VALIDAR SALDO
+// 2) VALIDAR QUE ALCANCE EL SALDO
 // ======================================
 
 if($precio > $saldoActual){
@@ -84,14 +89,16 @@ if($precio > $saldoActual){
 
 
 // ======================================
-// 3. CONSUMIR API POST
+// 3) DESCONTAR SALDO EN API
+// Aqui ocurre la operacion monetaria real (no en MySQL).
 // ======================================
 
 $responsePost = api_deduct_account($personId, $precio, "Compra de " . $producto);
 
 
 // ======================================
-// 4. VALIDAR RESPUESTA API
+// 4) VALIDAR QUE EL DESCUENTO SI SE APLICO
+// Se vuelve a consultar saldo y se calcula el descuento real para auditar.
 // ======================================
 
 if(!$responsePost["ok"]){
@@ -115,7 +122,8 @@ $montoRegistrado = round($descuentoReal, 2);
 
 
 // ======================================
-// 5. CALCULAR TAMALBITS
+// 5) CALCULAR TAMALBITS
+// Regla actual: solo "orejas de pollo" suma 1 Tamalbit por cada $10 descontados.
 // ======================================
 
 $tamalbits = 0;
@@ -127,7 +135,8 @@ if(strtolower($producto) == "orejas de pollo"){
 
 
 // ======================================
-// 6. GUARDAR EN MYSQL
+// 6) GUARDAR EN MYSQL
+// Se guarda historial local (usuario, producto, monto real descontado y Tamalbits).
 // ======================================
 
 if ($descripcion === "") {
@@ -179,7 +188,7 @@ if (!$insertOk) {
 }
 
 // ======================================
-// 7. REDIRECCIONAR
+// 7) REDIRECCIONAR CON EXITO
 // ======================================
 
 redirect_to_index("ok", "Compra registrada exitosamente", $personId);

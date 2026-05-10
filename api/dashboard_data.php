@@ -1,5 +1,6 @@
 <?php
 
+// Endpoint JSON del dashboard. Centraliza datos de API + MySQL para el frontend.
 header("Content-Type: application/json; charset=UTF-8");
 
 include(__DIR__ . "/../back/conexion.php");
@@ -15,6 +16,7 @@ $totalTamalbits = 0;
 $totalGastado = 0.0;
 $gastos = [];
 
+// 1) Validar personId recibido por query string.
 if ($personIdInput !== "") {
     if (preg_match('/^\d{6,20}$/', $personIdInput)) {
         $personId = $personIdInput;
@@ -23,7 +25,9 @@ if ($personIdInput !== "") {
     }
 }
 
+// 2) Si hay personId valido, hidratar métricas y movimientos del usuario.
 if ($personId !== "") {
+    // 2.1) Saldo y nombre vienen de la API externa.
     $accountResponse = api_get_account($personId);
 
     if ($accountResponse["ok"] && isset($accountResponse["data"]["balance"])) {
@@ -33,6 +37,7 @@ if ($personId !== "") {
         $apiError = "No fue posible leer el saldo desde la API. Verifica que bank-service este activo.";
     }
 
+    // 2.2) Historial de gastos almacenado localmente en MySQL.
     $gastosStmt = mysqli_prepare(
         $conn,
         "SELECT
@@ -68,6 +73,7 @@ if ($personId !== "") {
 
     mysqli_stmt_close($gastosStmt);
 
+    // 2.3) Totales acumulados para cards de resumen.
     $totalesStmt = mysqli_prepare(
         $conn,
         "SELECT
@@ -87,8 +93,11 @@ if ($personId !== "") {
     $totalGastado = (float)($totalesData["total_gastado"] ?? 0);
 }
 
+// 3) Métrica derivada para UX: saldo inicial estimado.
 $saldoInicialEstimado = $saldo + $totalGastado;
 $productos = [];
+
+// 4) Catálogo de productos disponible para el módulo de compra.
 $productosResult = mysqli_query(
     $conn,
     "SELECT p.id, p.nombre, p.precio, p.imagen_producto, c.nombre AS categoria
@@ -107,6 +116,7 @@ while ($producto = mysqli_fetch_assoc($productosResult)) {
     ];
 }
 
+// 5) Respuesta única consumida por front/scripts/script.js.
 echo json_encode([
     "personId" => $personId,
     "personIdError" => $personIdError,

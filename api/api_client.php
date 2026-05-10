@@ -1,7 +1,11 @@
 <?php
 
+// Cliente HTTP base para comunicarse con bank-service.
+// Devuelve una estructura uniforme: ok, status, data, raw, error.
+
 function api_request($method, $url, $payload = null)
 {
+    // Encabezados mínimos para consumir/entregar JSON.
     $headers = "Accept: application/json\r\n";
 
     if ($payload !== null) {
@@ -21,6 +25,7 @@ function api_request($method, $url, $payload = null)
         $options["http"]["content"] = json_encode($payload, JSON_UNESCAPED_UNICODE);
     }
 
+    // file_get_contents se usa como cliente HTTP liviano para este proyecto.
     $context = stream_context_create($options);
     $rawResponse = @file_get_contents($url, false, $context);
 
@@ -49,12 +54,14 @@ function api_request($method, $url, $payload = null)
     ];
 }
 
+// Consulta de cuenta (saldo/nombre) por personId.
 function api_get_account($personId)
 {
     $url = "http://localhost:8083/api/account/" . urlencode($personId);
     return api_request("GET", $url);
 }
 
+// Descuento de saldo en API externa; esta es la operacion monetaria real.
 function api_deduct_account($personId, $amount, $reason)
 {
     $url = "http://localhost:8083/api/account/" . urlencode($personId) . "/deduct";

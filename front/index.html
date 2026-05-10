@@ -12,6 +12,7 @@
 	<link href="styles/styles.css?v=20260509" rel="stylesheet">
 </head>
 <body>
+<!-- Barra superior fija con identidad de marca y usuario activo -->
 <header class="top-navbar">
 	<div class="container nav-shell">
 		<div class="brand-wrap">
@@ -37,6 +38,7 @@
 
 <main class="page-shell">
 	<section class="container py-4 py-lg-5">
+		<!-- Bloque principal del dashboard: consulta por personId, alertas y métricas -->
 		<div class="hero-card p-4 p-lg-5 mb-4">
 			<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
 				<div>
@@ -102,6 +104,7 @@
 			</p>
 		</div>
 
+		<!-- Catálogo de productos renderizado dinámicamente desde script.js -->
 		<section class="mb-4">
 			<div class="section-head">
 				<h2 class="section-title mb-0">Productos</h2>
@@ -110,6 +113,7 @@
 			<div id="productosContainer" class="row g-4"></div>
 		</section>
 
+		<!-- Tabla de historial de gastos; se llena desde la API interna -->
 		<section class="pb-2 pb-lg-4">
 			<div class="section-head">
 				<h2 class="section-title mb-0">Historial de gastos</h2>

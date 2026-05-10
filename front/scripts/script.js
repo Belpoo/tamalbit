@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+	// Referencias de UI y estado inicial tomado desde query params.
 	const personIdForm = document.querySelector("#personIdForm");
 	const personIdInput = document.querySelector("#personIdInput");
 	const alertsContainer = document.querySelector("#alertsContainer");
@@ -16,8 +17,11 @@ document.addEventListener("DOMContentLoaded", () => {
 	const queryMsg = (url.searchParams.get("msg") || "").trim();
 	const queryPersonId = (url.searchParams.get("personId") || "").trim();
 
+	// Formato uniforme de montos para todo el dashboard.
 	const formatCurrency = (value) => {
-		return `$${Number(value || 0).toFixed(2)}`;
+		const amount = Number(value ?? 0);
+		const safeAmount = Number.isFinite(amount) ? amount : 0;
+		return `$${safeAmount.toFixed(2)}`;
 	};
 
 	const fallbackImage = "data:image/svg+xml," + encodeURIComponent(`
@@ -45,6 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	};
 
 	const addAlert = (type, message) => {
+		// Inserta alertas Bootstrap reutilizables para feedback de usuario.
 		if (!alertsContainer || !message) {
 			return;
 		}
@@ -56,6 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	};
 
 	const setMetrics = (metrics = {}, usuarioLabel = "-") => {
+		// Sincroniza métricas en cards y en la píldora del navbar.
 		if (!metricUsuario) {
 			return;
 		}
@@ -71,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	};
 
 	const resolveProductImage = (producto) => {
+		// Prioridad de imagen: archivo definido en BD -> fallback por nombre -> SVG genérico.
 		const fallbackByProductName = {
 			"orejas de pollo": "orejas-de-pollo.jpg",
 			"patas de zancudo": "patas-de-zancudo.jpg",
@@ -95,6 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	};
 
 	const renderProductos = (productos, personId, allowPurchase) => {
+		// Renderiza las cards de productos y bloquea compra si no hay cuenta válida/API disponible.
 		if (!productosContainer) {
 			return;
 		}
@@ -145,6 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	};
 
 	const renderHistorial = (gastos) => {
+		// Construye el historial tabular con estilos visuales para categoría y Tamalbits.
 		if (!historialBody) {
 			return;
 		}
@@ -170,6 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	};
 
 	const applyRevealAnimation = () => {
+		// Activa animación de entrada escalonada para elementos con reveal-up.
 		const items = document.querySelectorAll(".reveal-up");
 
 		items.forEach((item, index) => {
@@ -180,6 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	};
 
 	const wireImageFallbacks = () => {
+		// Si una imagen falla al cargar, reemplaza por el SVG base.
 		document.querySelectorAll(".product-image").forEach((img) => {
 			img.addEventListener("error", () => {
 				img.src = fallbackImage;
@@ -188,6 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	};
 
 	const loadDashboard = async (personId) => {
+		// Flujo principal: consulta endpoint JSON, procesa errores y renderiza todo el dashboard.
 		alertsContainer.innerHTML = "";
 
 		if (queryMsg) {
@@ -233,6 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	};
 
 	if (personIdInput) {
+		// Recupera personId desde URL o localStorage para mejorar continuidad de uso.
 		const savedPersonId = (localStorage.getItem("tamalbit_person_id") || "").trim();
 
 		if (queryPersonId && idRegex.test(queryPersonId)) {
@@ -243,6 +256,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	if (personIdForm && personIdInput) {
+		// Valida formato del personId antes de enviar el formulario.
 		personIdForm.addEventListener("submit", (event) => {
 			const value = personIdInput.value.trim();
 
@@ -259,6 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 	}
 
+	// Primera carga del dashboard con el personId resuelto.
 	const initialPersonId = personIdInput ? personIdInput.value.trim() : "";
 	loadDashboard(initialPersonId);
 });
