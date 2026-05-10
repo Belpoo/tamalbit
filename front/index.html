@@ -4,103 +4,139 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Tamalbit</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link href="styles/styles.css" rel="stylesheet">
+	<link href="styles/bootstrap.min.css" rel="stylesheet">
+	<link href="styles/styles.css?v=20260509" rel="stylesheet">
 </head>
 <body>
-<main class="page-shell">
-	<section class="hero-card container py-4 py-md-5">
-		<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+<header class="top-navbar">
+	<div class="container nav-shell">
+		<div class="brand-wrap">
+			<div class="brand-icon" aria-hidden="true">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M5 14.5L9 10.5L12 13.5L18.5 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					<path d="M15.5 7H18.5V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					<rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.6"/>
+				</svg>
+			</div>
 			<div>
-				<h1 class="display-6 fw-bold mb-1">Tamalbit Market</h1>
-				<p class="text-muted mb-0">Compra simulada con control de saldo por API</p>
-			</div>
-			<a class="btn btn-outline-dark" target="_blank" href="http://localhost:8083/swagger-ui/index.html">Ver Swagger</a>
-		</div>
-
-		<form id="personIdForm" class="row g-2 align-items-end mb-3" method="GET" action="index.html" novalidate>
-			<div class="col-12 col-md-8 col-lg-6">
-				<label class="form-label" for="personIdInput">Codigo de usuario (personId)</label>
-				<input
-					id="personIdInput"
-					name="personId"
-					type="text"
-					class="form-control"
-					inputmode="numeric"
-					pattern="\d{6,20}"
-					maxlength="20"
-					required
-					placeholder="Ej: 240420241052"
-				>
-				<small id="personIdHelp" class="text-muted">Solo numeros. Entre 6 y 20 digitos.</small>
-			</div>
-			<div class="col-12 col-md-auto">
-				<button class="btn btn-dark w-100" type="submit">Consultar cuenta</button>
-			</div>
-		</form>
-
-		<div id="alertsContainer"></div>
-
-		<div class="row g-3 metrics-row">
-			<div class="col-12 col-md-3">
-				<article class="metric-card">
-					<span class="metric-label">Usuario</span>
-					<h3 id="metricUsuario" class="metric-value">-</h3>
-				</article>
-			</div>
-			<div class="col-12 col-md-3">
-				<article class="metric-card">
-					<span class="metric-label">Saldo API</span>
-					<h3 id="metricSaldo" class="metric-value text-success">$0.00</h3>
-				</article>
-			</div>
-			<div class="col-12 col-md-3">
-				<article class="metric-card">
-					<span class="metric-label">Total gastado</span>
-					<h3 id="metricGastado" class="metric-value text-danger">$0.00</h3>
-				</article>
-			</div>
-			<div class="col-12 col-md-3">
-				<article class="metric-card">
-					<span class="metric-label">Tamalbits</span>
-					<h3 id="metricTamalbits" class="metric-value text-warning">0 🪙</h3>
-				</article>
+				<p class="brand-kicker mb-0">Billetera digital universitaria</p>
+				<h1 class="brand-title mb-0">Tamalbit</h1>
 			</div>
 		</div>
 
-		<p class="small text-muted mt-3 mb-0">
-			Saldo inicial estimado (saldo API + gastos registrados):
-			<strong id="metricSaldoInicial">$0.00</strong>
-		</p>
-	</section>
-
-	<section class="container mb-4">
-		<h2 class="section-title">Productos</h2>
-		<div id="productosContainer" class="row g-4"></div>
-	</section>
-
-	<section class="container pb-5">
-		<h2 class="section-title">Historial de gastos</h2>
-		<div class="table-shell">
-			<table class="table table-striped table-hover align-middle mb-0">
-				<thead>
-				<tr>
-					<th>Usuario</th>
-					<th>Producto</th>
-					<th>Categoría</th>
-					<th>Monto</th>
-					<th>Descripción</th>
-					<th>Tamalbits</th>
-					<th>Fecha</th>
-				</tr>
-				</thead>
-				<tbody id="historialBody"></tbody>
-			</table>
+		<div class="connected-user-pill">
+			<span class="pill-label">Usuario conectado</span>
+			<strong id="navbarUser" class="pill-value">Sin cuenta</strong>
 		</div>
+	</div>
+</header>
+
+<main class="page-shell">
+	<section class="container py-4 py-lg-5">
+		<div class="hero-card p-4 p-lg-5 mb-4">
+			<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+				<div>
+					<h2 class="hero-title mb-2">Dashboard financiero</h2>
+					<p class="hero-subtitle mb-0">Control de saldo, compras y Tamalbits en tiempo real con validacion por API.</p>
+				</div>
+				<a class="btn btn-outline-primary soft-btn" target="_blank" href="http://localhost:8083/swagger-ui/index.html">Ver Swagger API</a>
+			</div>
+
+			<form id="personIdForm" class="row g-2 align-items-end mb-3" method="GET" action="index.html" novalidate>
+				<div class="col-12 col-md-8 col-lg-6">
+					<label class="form-label" for="personIdInput">Codigo de usuario (personId)</label>
+					<input
+						id="personIdInput"
+						name="personId"
+						type="text"
+						class="form-control"
+						inputmode="numeric"
+						pattern="\d{6,20}"
+						maxlength="20"
+						required
+						placeholder="Ej: 240420241052"
+					>
+					<small id="personIdHelp" class="text-muted">Solo numeros. Entre 6 y 20 digitos.</small>
+				</div>
+				<div class="col-12 col-md-auto">
+					<button class="btn btn-primary w-100 soft-btn" type="submit">Consultar cuenta</button>
+				</div>
+			</form>
+
+			<div id="alertsContainer"></div>
+
+			<div class="row g-3 g-lg-4 metrics-row">
+				<div class="col-12 col-sm-6 col-xl-3">
+					<article class="metric-card tone-user">
+						<span class="metric-label">Usuario</span>
+						<h3 id="metricUsuario" class="metric-value">-</h3>
+					</article>
+				</div>
+				<div class="col-12 col-sm-6 col-xl-3">
+					<article class="metric-card tone-balance">
+						<span class="metric-label">Saldo API</span>
+						<h3 id="metricSaldo" class="metric-value">$0.00</h3>
+					</article>
+				</div>
+				<div class="col-12 col-sm-6 col-xl-3">
+					<article class="metric-card tone-expense">
+						<span class="metric-label">Total gastado</span>
+						<h3 id="metricGastado" class="metric-value">$0.00</h3>
+					</article>
+				</div>
+				<div class="col-12 col-sm-6 col-xl-3">
+					<article class="metric-card tone-bits">
+						<span class="metric-label">Tamalbits</span>
+						<h3 id="metricTamalbits" class="metric-value">0</h3>
+					</article>
+				</div>
+			</div>
+
+			<p class="small text-muted mt-4 mb-0">
+				Saldo inicial estimado (saldo API + gastos registrados):
+				<strong id="metricSaldoInicial">$0.00</strong>
+			</p>
+		</div>
+
+		<section class="mb-4">
+			<div class="section-head">
+				<h2 class="section-title mb-0">Productos</h2>
+				<span class="section-caption">Compra rapida y validacion segura de saldo</span>
+			</div>
+			<div id="productosContainer" class="row g-4"></div>
+		</section>
+
+		<section class="pb-2 pb-lg-4">
+			<div class="section-head">
+				<h2 class="section-title mb-0">Historial de gastos</h2>
+				<span class="section-caption">Movimientos recientes de tu billetera</span>
+			</div>
+			<div class="table-shell">
+				<div class="table-responsive">
+					<table class="table table-hover align-middle mb-0">
+						<thead>
+						<tr>
+							<th>Usuario</th>
+							<th>Producto</th>
+							<th>Categoría</th>
+							<th>Monto</th>
+							<th>Descripción</th>
+							<th>Tamalbits</th>
+							<th>Fecha</th>
+						</tr>
+						</thead>
+						<tbody id="historialBody"></tbody>
+					</table>
+				</div>
+			</div>
+		</section>
 	</section>
 </main>
 
-<script src="scripts/script.js?v=20260508"></script>
+<script src="scripts/script.js?v=20260509"></script>
 </body>
 </html>

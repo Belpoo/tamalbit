@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	const metricGastado = document.querySelector("#metricGastado");
 	const metricTamalbits = document.querySelector("#metricTamalbits");
 	const metricSaldoInicial = document.querySelector("#metricSaldoInicial");
+	const navbarUser = document.querySelector("#navbarUser");
 	const idRegex = /^\d{6,20}$/;
 	const url = new URL(window.location.href);
 	const queryStatus = (url.searchParams.get("status") || "").trim();
@@ -60,9 +61,12 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 
 		metricUsuario.textContent = usuarioLabel;
+		if (navbarUser) {
+			navbarUser.textContent = usuarioLabel === "-" ? "Sin cuenta" : usuarioLabel;
+		}
 		metricSaldo.textContent = formatCurrency(metrics.saldo);
 		metricGastado.textContent = formatCurrency(metrics.totalGastado);
-		metricTamalbits.textContent = `${Number(metrics.totalTamalbits || 0)} 🪙`;
+		metricTamalbits.textContent = `${Number(metrics.totalTamalbits || 0)} Tamalbits`;
 		metricSaldoInicial.textContent = formatCurrency(metrics.saldoInicialEstimado);
 	};
 
@@ -80,11 +84,11 @@ document.addEventListener("DOMContentLoaded", () => {
 		const fallbackName = fallbackByProductName[String(producto.nombre || "").toLowerCase()] || "";
 
 		if (isSafeFileName) {
-			return `../images/${encodeURIComponent(rawName)}`;
+			return `images/${encodeURIComponent(rawName)}`;
 		}
 
 		if (/^[a-zA-Z0-9._-]+$/.test(fallbackName)) {
-			return `../images/${encodeURIComponent(fallbackName)}`;
+			return `images/${encodeURIComponent(fallbackName)}`;
 		}
 
 		return fallbackImage;
@@ -99,7 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
 			productosContainer.innerHTML = `<div class="col-12"><div class="alert alert-warning mb-0">No hay productos cargados en la base de datos.</div></div>`;
 			return;
 		}
-
 		productosContainer.innerHTML = productos.map((producto) => {
 			const inputId = `desc-${producto.id}`;
 			const disabledAttr = allowPurchase ? "" : "disabled";
@@ -114,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 						<div class="d-flex justify-content-between align-items-start gap-2 mb-2">
 							<h3 class="h5 mb-0">${escapeHtml(producto.nombre)}</h3>
-							<span class="badge rounded-pill text-bg-light">${escapeHtml(producto.categoria)}</span>
+							<span class="badge rounded-pill category-badge">${escapeHtml(producto.categoria)}</span>
 						</div>
 
 						<p class="display-6 fw-bold price-tag mb-3">${formatCurrency(producto.precio)}</p>
@@ -156,10 +159,10 @@ document.addEventListener("DOMContentLoaded", () => {
 				<tr>
 					<td>${escapeHtml(gasto.nombre_usuario)}</td>
 					<td>${escapeHtml(gasto.producto)}</td>
-					<td>${escapeHtml(gasto.categoria)}</td>
+					<td><span class="history-category">${escapeHtml(gasto.categoria)}</span></td>
 					<td>${formatCurrency(gasto.monto)}</td>
 					<td>${escapeHtml(gasto.descripcion)}</td>
-					<td>${Number(gasto.tamalbits || 0)} 🪙</td>
+					<td><span class="bits-pill"><span class="bits-icon" aria-hidden="true"></span>${Number(gasto.tamalbits || 0)}</span></td>
 					<td>${escapeHtml(gasto.fecha)}</td>
 				</tr>
 			`;
