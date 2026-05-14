@@ -19,7 +19,6 @@ auth.json
 dist/
 build/
 *.min.js
-*.min.css
 
 # --- Logs y Bases de datos ---
 *.log
