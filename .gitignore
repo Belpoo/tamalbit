@@ -19,9 +19,6 @@ auth.json
 dist/
 build/
 *.min.js
-*.min.css
-# Excepción: permitir bootstrap.min.css en styles
-!front/styles/bootstrap.min.css
 
 # --- Logs y Bases de datos ---
 *.log
