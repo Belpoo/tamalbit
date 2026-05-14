@@ -5,9 +5,10 @@ $host = "localhost";
 $usuario = "adminSS";
 $password = "ss1234";
 $bd = "tamalbit_db";
+$port = 3306;
 
 // Apertura de conexión; si falla, se corta la ejecución para evitar operaciones inconsistentes.
-$conn = mysqli_connect($host, $usuario, $password, $bd);
+$conn = mysqli_connect($host, $usuario, $password, $bd, $port);
 
 if (!$conn) {
     die("Error de conexión: " . mysqli_connect_error());
